@@ -32,8 +32,6 @@ const server = app.listen(PORT, () => {
 
 const wss = new WebSocket.Server({ server });
 
-console.log("Pesterchum WS running on ws:// (via Render URL)");
-
 function broadcast(payload) {
     const data = JSON.stringify(payload);
 
