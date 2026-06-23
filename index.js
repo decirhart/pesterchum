@@ -1,12 +1,16 @@
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const WebSocket = require("ws");
+const express = require("express");
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const PORT = process.env.PORT || 3001;
 
 const USERS = require("./users.json");
 
-const express = require("express");
+/* =========================================================
+   EXPRESS SERVER (serves your HTML/CSS/JS)
+========================================================= */
+
 const app = express();
 
 app.use(express.static("public"));
@@ -15,14 +19,9 @@ const server = app.listen(PORT, () => {
     console.log("HTTP server running on port", PORT);
 });
 
-const express = require("express");
-const app = express();
-
-app.use(express.static("public"));
-
-const server = app.listen(PORT, () => {
-    console.log("HTTP server running on port", PORT);
-});
+/* =========================================================
+   WEBSOCKET SERVER
+========================================================= */
 
 const wss = new WebSocket.Server({ server });
 
@@ -45,6 +44,10 @@ wss.on("listening", () => {
 wss.on("error", (err) => {
     console.error("WS ERROR:", err);
 });
+
+/* =========================================================
+   DISCORD BOT
+========================================================= */
 
 const client = new Client({
     intents: [
@@ -73,7 +76,6 @@ client.on("messageCreate", (msg) => {
     console.log("----- MESSAGE -----");
     console.log("author:", msg.author?.username);
     console.log("bot:", msg.author?.bot);
-    console.log("webhookId:", msg.webhookId);
     console.log("content:", msg.content);
     console.log("------------------");
 
