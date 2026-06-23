@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const WebSocket = require("ws");
 const express = require("express");
+const path = require("path");
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const PORT = process.env.PORT || 3001;
@@ -8,12 +9,18 @@ const PORT = process.env.PORT || 3001;
 const USERS = require("./users.json");
 
 /* =========================================================
-   EXPRESS SERVER (serves your HTML/CSS/JS)
+   EXPRESS APP (STATIC FRONTEND)
 ========================================================= */
 
 const app = express();
 
-app.use(express.static("public"));
+// IMPORTANT: serve /public correctly
+app.use(express.static(path.join(__dirname, "public")));
+
+// Force homepage to load index.html
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 const server = app.listen(PORT, () => {
     console.log("HTTP server running on port", PORT);
@@ -72,12 +79,6 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", (msg) => {
-
-    console.log("----- MESSAGE -----");
-    console.log("author:", msg.author?.username);
-    console.log("bot:", msg.author?.bot);
-    console.log("content:", msg.content);
-    console.log("------------------");
 
     let rpUser = null;
 
