@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesterchum 6.0</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div id="crtOverlay"></div>
+
+<canvas id="bgStars"></canvas>
+
+<div id="desktopIcon">
+
+    <img
+        src="pesterchumdave.ico"
+        id="desktopIconImage"
+        draggable="false">
+
+    <div id="desktopIconLabel">
+        Pesterchum 6.0
+    </div>
+
+</div>
+
+<div id="loginScreen">
+
+    <div id="loginWindow">
+
+<div id="loginHeader">
+
+    <canvas id="loginSpiro" width="80" height="80"></canvas>
+
+    <div class="loginStar">✦</div>
+
+    <div>
+        <div id="skaiaTitle">SKAIANET SYSTEMS</div>
+        <div id="skaiaSub">AUTHORIZED USER LOGIN</div>
+    </div>
+
+</div>
+        <div id="loginTitle">
+            PESTERCHUM 6.0
+        </div>
+
+        <div id="loginSubtitle">
+            CONNECT TO YOUR CHUMS.
+        </div>
+
+        <input
+            id="username"
+            type="text"
+            autocomplete="username"
+            spellcheck="false"
+            placeholder="USERNAME">
+
+        <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="PASSWORD">
+
+        <button id="loginBtn">
+            LOG IN
+        </button>
+
+        <div id="loginMsg"></div>
+
+    </div>
+
+</div>
+
+<div id="taskbar">
+
+    <div id="taskbarWindowsIcon">
+        <canvas id="taskbarWindowsCanvas" width="26" height="26"></canvas>
+    </div>
+
+    <div id="taskbarButton">
+        <div id="taskbarIcon">✦</div>
+        <div>PESTERCHUM 6.0</div>
+    </div>
+
+</div>
+
+<div id="clientWindow">
+
+    <div id="leftWindow">
+
+        <div class="titlebar">
+
+            <div id="chatClient">
+                CHAT CLIENT
+            </div>
+
+            <div class="windowButtons">
+                <span id="minBtn">−</span>
+                <span id="maxBtn">□</span>
+                <span id="closeBtn">×</span>
+            </div>
+
+        </div>
+
+        <div id="chumroll"></div>
+
+        <div class="buttonRow">
+
+            <button id="addChum">
+                ADD CHUM
+            </button>
+
+            <button id="blockChum">
+                BLOCK
+            </button>
+
+            <button id="pesterBtn">
+                PESTER!
+            </button>
+
+        </div>
+
+        <div class="resize-handle"></div>
+
+    </div>
+
+    <div id="rightWindow">
+
+        <div class="titlebar">
+
+            <div id="chatTitle">
+                :: SELECT USER ::
+            </div>
+
+            <div class="windowButtons">
+
+                <span id="chatMin">−</span>
+                <span id="chatMax">□</span>
+                <span id="chatClose">×</span>
+
+            </div>
+
+        </div>
+
+        <div id="pesterlog"></div>
+
+        <textarea
+            id="chatInput"
+            spellcheck="false"
+            placeholder="Type your message..."></textarea>
+
+        <div class="resize-handle"></div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+<div id="postCopyright">
+    © 2009 Skaianet Systems
+</div>
+</body>
+</html>

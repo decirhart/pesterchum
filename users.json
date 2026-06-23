@@ -1,0 +1,24 @@
+{
+  "gawdelpusCacodoxy": {
+    "password": "Crowberry",
+    "display": {
+      "handle": "gawdelpusCacodoxy",
+      "nickname": "C'ath Saint-Pierre",
+      "color": "#3FB7B7",
+      "role": "human"
+    },
+    "discord": {
+      "id": "",
+      "dmEnabled": true
+    },
+    "status": {
+      "online": false,
+      "typing": false,
+      "lastSeen": null
+    },
+    "rp": {
+      "mood": "neutral",
+      "currentChat": null
+    }
+  }
+}

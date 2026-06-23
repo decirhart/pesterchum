@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Pesterchum Boot</title>
+
+<meta http-equiv="refresh" content="9;url=client.html">
+
+<style>
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+    font-family: Verdana, Arial, sans-serif;
+    cursor: url("homestuckcursors/background.cur"), auto;
+    color: white;
+
+    animation: crtFlicker .14s infinite;
+}
+
+@keyframes crtFlicker {
+    0%   { opacity: 1; }
+    50%  { opacity: .992; }
+    100% { opacity: 1; }
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 1px,
+        transparent 2px,
+        transparent 4px
+    );
+
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+}
+
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 20% 30%, rgba(120,200,255,0.22), transparent 45%),
+        radial-gradient(circle at 80% 60%, rgba(160,255,240,0.18), transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(255,247,0,0.08), transparent 60%);
+
+    animation: floatAero 6s ease-in-out infinite alternate;
+
+    opacity: 1;
+
+    filter: contrast(1.1) brightness(1.1);
+}
+
+@keyframes floatAero {
+    from { transform: translateY(0px); }
+    to   { transform: translateY(-10px); }
+}
+
+#crtOverlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    background: radial-gradient(circle at center,
+        rgba(0,0,0,0) 45%,
+        rgba(0,0,0,0.25) 65%,
+        rgba(0,0,0,0.75) 100%);
+
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.9);
+}
+
+#boot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%) perspective(900px) rotateX(1.6deg);
+
+    width: 640px;
+    padding: 24px;
+
+    border: 4px solid #fff700;
+    background: #111;
+
+    box-shadow: 0 0 30px rgba(255,247,0,.25);
+}
+
+
+#skaiaLogo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px;
+    margin-bottom: 14px;
+
+    border: 2px solid rgba(0,255,0,0.35);
+    background: linear-gradient(135deg, rgba(0,255,0,0.08), rgba(255,255,255,0.05));
+}
+
+#spiroCanvas {
+    width: 80px;
+    height: 80px;
+}
+
+.star {
+    font-size: 16px;
+    color: #fff;
+
+    text-shadow:
+        0 0 6px #00FF00,
+        0 0 14px rgba(0,255,0,0.7);
+}
+
+.title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff700;
+
+    margin-bottom: 10px;
+
+    text-shadow:
+        0 0 6px rgba(255,247,0,0.6),
+        0 0 14px rgba(255,247,0,0.35),
+        0 0 26px rgba(255,200,0,0.2);
+}
+
+.subtitle {
+    font-size: 14px;
+    opacity: .9;
+
+    margin-bottom: 12px;
+
+    color: rgba(160,220,255,0.9);
+
+    text-shadow:
+        0 0 6px rgba(120,200,255,0.4),
+        0 0 14px rgba(120,200,255,0.25);
+}
+
+.bar {
+    width: 100%;
+    height: 18px;
+
+    border: 2px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.05);
+
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+}
+
+.block {
+    flex: 1;
+    opacity: 0.12;
+
+    background: linear-gradient(90deg, #7fd9ff, #2aa8ff);
+
+    transition: opacity 0.2s ease;
+}
+
+.block.active {
+    opacity: 1;
+    animation: hueShift 1.2s linear infinite;
+}
+
+@keyframes hueShift {
+    0%   { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+.status {
+    margin-top: 14px;
+    font-size: 14px;
+
+    color: #9fd4ff;
+
+    height: 18px;
+
+    text-shadow:
+        0 0 6px rgba(120,200,255,0.4),
+        0 0 12px rgba(120,200,255,0.25);
+
+    animation: statusPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%   { opacity: 0.7; filter: brightness(1); }
+    50%  { opacity: 1; filter: brightness(1.25); }
+    100% { opacity: 0.7; filter: brightness(1); }
+}
+
+.footer {
+    margin-top: 30px;
+    font-size: 11px;
+
+    color: rgba(255,255,255,0.35);
+
+    text-align: right;
+
+    text-shadow: 0 0 6px rgba(255,255,255,0.08);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="crtOverlay"></div>
+
+<div id="boot">
+
+    <div id="skaiaLogo">
+
+        <canvas id="spiroCanvas" width="80" height="80"></canvas>
+
+        <div class="star">✦</div>
+
+        <div>
+            <div>SKAIANET</div>
+            <div style="font-size:10px;opacity:0.7;">SBURB NETWORK DIVISION</div>
+        </div>
+
+    </div>
+
+    <div class="title">PESTERCHUM 6.0</div>
+    <div class="subtitle">Initializing Chat Client...</div>
+
+    <div class="bar" id="bar"></div>
+
+    <div class="status" id="status">Allocating chum memory...</div>
+
+    <div class="footer">© 2009 Skaianet Systems</div>
+
+</div>
+
+<script>
+
+const bar = document.getElementById("bar");
+const status = document.getElementById("status");
+
+const steps = [
+"Allocating chum memory...",
+"Loading profile database...",
+"Connecting to Skaian Relay...",
+"Checking chum handles...",
+"Loading memo subsystem...",
+"Authenticating session...",
+"Preparing chat client..."
+];
+
+const BLOCKS = 24;
+let blocks = [];
+
+for(let i=0;i<BLOCKS;i++){
+    const b = document.createElement("div");
+    b.className = "block";
+    bar.appendChild(b);
+    blocks.push(b);
+}
+
+let progress = 0;
+let step = 0;
+
+function run(){
+
+const t = setInterval(()=>{
+
+    progress += Math.random()*3 + 1;
+    if(progress > 100) progress = 100;
+
+    const lit = Math.floor((progress/100) * BLOCKS);
+
+    for(let i=0;i<BLOCKS;i++){
+        blocks[i].classList.toggle("active", i <= lit);
+    }
+
+    if(Math.random() < 0.25 && step < steps.length){
+        status.textContent = steps[step++];
+    }
+
+    if(progress >= 100){
+
+        clearInterval(t);
+
+        status.textContent = "FINALIZING CLIENT...";
+
+        setTimeout(()=>{
+            status.textContent = "LAUNCHING PESTERCHUM...";
+        },600);
+
+        setTimeout(()=>{
+            window.location.href = "./client.html";
+        },1200);
+    }
+
+},60);
+
+}
+
+run();
+
+window.addEventListener("DOMContentLoaded",()=>{
+
+const canvas = document.getElementById("spiroCanvas");
+if(!canvas) return;
+
+const ctx = canvas.getContext("2d");
+
+const cx = 40;
+const cy = 40;
+
+let angle = 0;
+
+function rgb(i,t){
+return `rgb(${(Math.sin(t+i)*127+128)|0},
+            ${(Math.sin(t+i+2)*127+128)|0},
+            ${(Math.sin(t+i+4)*127+128)|0})`;
+}
+
+function star(x,y,size,rot){
+
+ctx.beginPath();
+
+const spikes=4;
+const outer=size;
+const inner=size*0.45;
+
+for(let i=0;i<spikes*2;i++){
+
+const r=(i%2===0)?outer:inner;
+const a=rot+i*Math.PI/spikes;
+
+const px=x+Math.cos(a)*r;
+const py=y+Math.sin(a)*r;
+
+if(i===0) ctx.moveTo(px,py);
+else ctx.lineTo(px,py);
+
+}
+
+ctx.closePath();
+ctx.stroke();
+
+}
+
+function draw(){
+
+ctx.clearRect(0,0,80,80);
+
+ctx.lineWidth=1.6;
+ctx.shadowBlur=10;
+
+angle+=0.008;
+
+const orbit=18;
+
+for(let i=0;i<3;i++){
+
+const phase=angle+i*(Math.PI*2/3);
+
+const x=cx+Math.cos(phase)*orbit;
+const y=cy+Math.sin(phase)*orbit;
+
+ctx.strokeStyle=rgb(i,angle*1.5);
+ctx.shadowColor=ctx.strokeStyle;
+
+star(x,y,11,angle*1.2);
+
+}
+
+ctx.shadowBlur=12;
+ctx.fillStyle="#fff";
+
+ctx.beginPath();
+ctx.arc(cx,cy,3,0,Math.PI*2);
+ctx.fill();
+
+requestAnimationFrame(draw);
+
+}
+
+draw();
+
+});
+
+</script>
+
+</body>
+</html>
