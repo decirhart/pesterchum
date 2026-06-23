@@ -7,9 +7,13 @@ const PORT = process.env.PORT || 3001;
 
 const USERS = require("./users.json");
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Pesterchum WS running");
+const express = require("express");
+const app = express();
+
+app.use(express.static("public"));
+
+const server = app.listen(PORT, () => {
+    console.log("HTTP server running on port", PORT);
 });
 
 server.listen(PORT, () => {
