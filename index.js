@@ -1,6 +1,5 @@
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const WebSocket = require("ws");
-const http = require("http");
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const PORT = process.env.PORT || 3001;
@@ -16,7 +15,12 @@ const server = app.listen(PORT, () => {
     console.log("HTTP server running on port", PORT);
 });
 
-server.listen(PORT, () => {
+const express = require("express");
+const app = express();
+
+app.use(express.static("public"));
+
+const server = app.listen(PORT, () => {
     console.log("HTTP server running on port", PORT);
 });
 
