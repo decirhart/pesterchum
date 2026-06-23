@@ -3,7 +3,7 @@ const WebSocket = require("ws");
 const http = require("http");
 
 const TOKEN = process.env.DISCORD_TOKEN;
-const WS_PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001;
 
 const USERS = require("./users.json");
 
@@ -12,8 +12,8 @@ const server = http.createServer((req, res) => {
     res.end("Pesterchum WS running");
 });
 
-server.listen(WS_PORT, () => {
-    console.log("HTTP server running on port", WS_PORT);
+server.listen(PORT, () => {
+    console.log("HTTP server running on port", PORT);
 });
 
 const wss = new WebSocket.Server({ server });
@@ -51,7 +51,7 @@ const client = new Client({
     ]
 });
 
-client.once("clientReady", () => {
+client.once("ready", () => {
     console.log("Bot online as:", client.user.tag);
 
     broadcast({
@@ -80,20 +80,14 @@ client.on("messageCreate", (msg) => {
 
     const payload = {
         type: "message",
-
         from: rpUser ? rpUser.display.handle : msg.author.username,
         displayName: rpUser ? rpUser.display.nickname : msg.author.username,
         color: rpUser ? rpUser.display.color : "#ffffff",
-
         content: msg.content,
-
         timestamp: msg.createdTimestamp,
-
         isWebhook: !!msg.webhookId,
-
         channelId: msg.channel.id,
         messageId: msg.id,
-
         attachments: [...msg.attachments.values()].map(a => a.url)
     };
 

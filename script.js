@@ -568,7 +568,11 @@ if (taskCanvas) {
     animate();
 }
 
-const ws = new WebSocket("ws://127.0.0.1:3001");
+const ws = new WebSocket(
+  window.location.protocol === "https:"
+    ? "wss://" + window.location.host
+    : "ws://localhost:3001"
+);
 
 ws.onopen = () => {
     console.log("WS CONNECTED ✅");
