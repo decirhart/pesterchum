@@ -87,6 +87,29 @@ client.on("messageCreate", (msg) => {
         }
     }
 
+    // ONLY allow Tupper-linked users
+    if (!rpUser) return;
+
+    const payload = {
+        type: "message",
+
+        // ONLY TUPPER DATA (no Discord fallback)
+        from: rpUser.display.handle,
+        displayName: rpUser.display.nickname,
+        color: rpUser.display.color,
+
+        content: msg.content,
+        timestamp: msg.createdTimestamp,
+
+        isWebhook: !!msg.webhookId,
+        channelId: msg.channel.id,
+        messageId: msg.id,
+        attachments: [...msg.attachments.values()].map(a => a.url)
+    };
+
+    broadcast(payload);
+});
+
     const payload = {
         type: "message",
         from: rpUser ? rpUser.display.handle : msg.author.username,
