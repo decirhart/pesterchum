@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const WebSocket = require("ws");
 const express = require("express");
 const path = require("path");
+const crypto = require("crypto");
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const PORT = process.env.PORT || 3001;
@@ -9,15 +10,13 @@ const PORT = process.env.PORT || 3001;
 const USERS = require("./users.json");
 
 /* =========================================================
-   EXPRESS APP (STATIC FRONTEND)
+   EXPRESS APP
 ========================================================= */
 
 const app = express();
 
-// IMPORTANT: serve /public correctly
 app.use(express.static(path.join(__dirname, "public")));
 
-// Force homepage to load index.html
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -36,7 +35,7 @@ function broadcast(payload) {
     const data = JSON.stringify(payload);
 
     wss.clients.forEach(client => {
-        if (client.readyState === 1) {
+        if (client.readyState === WebSocket.OPEN) {
             client.send(data);
         }
     });
@@ -46,7 +45,7 @@ wss.on("listening", () => {
     console.log("WebSocket ready");
 });
 
-wss.on("error", (err) => {
+wss.on("error", err => {
     console.error("WS ERROR:", err);
 });
 
@@ -68,63 +67,68 @@ const client = new Client({
 });
 
 client.once("ready", () => {
+
     console.log("Bot online as:", client.user.tag);
 
     broadcast({
         type: "system",
         event: "ready"
     });
+
 });
 
-client.on("messageCreate", (msg) => {
+/* =========================================================
+   DISCORD -> STANDARD MESSAGE PIPELINE
+========================================================= */
+
+client.on("messageCreate", msg => {
+
+    // Ignore bots (including Tupperbox webhooks if desired)
+    if (msg.author.bot) return;
 
     let rpUser = null;
 
     for (const key in USERS) {
+
         if (USERS[key]?.discord?.id === msg.author.id) {
             rpUser = USERS[key];
             break;
         }
+
     }
 
-    // ONLY allow Tupper-linked users
+    // Ignore users not linked in users.json
     if (!rpUser) return;
 
     const payload = {
+
+        id: crypto.randomUUID(),
+
         type: "message",
 
-        // ONLY TUPPER DATA (no Discord fallback)
-        from: rpUser.display.handle,
+        room: msg.channel.id,
+
+        handle: rpUser.display.handle,
+
         displayName: rpUser.display.nickname,
+
         color: rpUser.display.color,
 
         content: msg.content,
+
         timestamp: msg.createdTimestamp,
 
-        isWebhook: !!msg.webhookId,
-        channelId: msg.channel.id,
-        messageId: msg.id,
         attachments: [...msg.attachments.values()].map(a => a.url)
+
     };
 
     broadcast(payload);
+
 });
 
-    const payload = {
-        type: "message",
-        from: rpUser ? rpUser.display.handle : msg.author.username,
-        displayName: rpUser ? rpUser.display.nickname : msg.author.username,
-        color: rpUser ? rpUser.display.color : "#ffffff",
-        content: msg.content,
-        timestamp: msg.createdTimestamp,
-        isWebhook: !!msg.webhookId,
-        channelId: msg.channel.id,
-        messageId: msg.id,
-        attachments: [...msg.attachments.values()].map(a => a.url)
-    };
-
-    broadcast(payload);
-});
+/* =========================================================
+   ERROR HANDLING
+========================================================= */
 
 client.on("error", err => {
     console.error("Discord client error:", err);
@@ -133,5 +137,9 @@ client.on("error", err => {
 process.on("unhandledRejection", err => {
     console.error("Unhandled rejection:", err);
 });
+
+/* =========================================================
+   LOGIN
+========================================================= */
 
 client.login(TOKEN);
