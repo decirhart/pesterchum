@@ -84,29 +84,37 @@ client.once("ready", () => {
 
 client.on("messageCreate", msg => {
 
-    // 🔒 STOP duplicate processing of same Discord message
+    if (!msg.webhookId) return; // 🔥 ONLY TUPPER / WEBHOOKS
+
     if (seenMessages.has(msg.id)) return;
     seenMessages.add(msg.id);
 
     setTimeout(() => seenMessages.delete(msg.id), 60000);
-let identity = {
-    handle: msg.author.username,
-    displayName: msg.author.username,
-    color: "#ffffff"
-};
 
-/* =====================================================
-   1. REGISTERED RP USER (HIGHEST PRIORITY)
-===================================================== */
-
-const rpUser = Object.values(USERS).find(
+    const rpUser = Object.values(USERS).find(
     u => u?.discord?.id === msg.author.id
 );
 
+let identity;
+
 if (rpUser) {
-    handle = rpUser.display.handle;
-    displayName = rpUser.display.nickname;
-    color = rpUser.display.color;
+    identity = {
+        handle: rpUser.display.handle,
+        displayName: rpUser.display.nickname,
+        color: rpUser.display.color
+    };
+} else if (msg.webhookId) {
+    identity = {
+        handle: msg.author.username,
+        displayName: msg.author.username,
+        color: "#ffffff"
+    };
+} else {
+    identity = {
+        handle: msg.author.username,
+        displayName: msg.author.username,
+        color: "#ffffff"
+    };
 }
 
 /* =====================================================
@@ -123,11 +131,8 @@ if (!rpUser && msg.webhookId) {
    3. FINAL FALLBACK
 ===================================================== */
 
-if (!handle) handle = msg.author.username;
-if (!displayName) displayName = handle;
-
-    const payload = {
-    id: msg.id, // optional but good for debugging
+const payload = {
+    id: msg.id,
     type: "message",
     room: msg.channel.id,
 

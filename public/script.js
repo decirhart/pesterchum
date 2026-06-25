@@ -579,13 +579,22 @@ ws.onopen = () => {
 };
 
 ws.onmessage = (event) => {
-    let data;
 
+    let data;
     try {
         data = JSON.parse(event.data);
-    } catch (e) {
+    } catch {
         return;
     }
+
+    if (data.type !== "message") return;
+
+    const id = data.id;
+
+    // prevent duplicates
+    if (!window.__seen) window.__seen = new Set();
+    if (window.__seen.has(id)) return;
+    window.__seen.add(id);
 
     const sender = data.displayName || "unknown";
     const color = data.color || "#ffffff";
@@ -596,15 +605,15 @@ ws.onmessage = (event) => {
     div.innerHTML = `
         <span style="color:${color}; font-weight:bold;">
             ${sender}
-        </span>: 
+        </span>
         <span style="color:${color};">
-            ${content}
+            : ${content}
         </span>
     `;
 
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
-};
+};log.scrollHeight;
 
 ws.onerror = (e) => console.log("WS ERROR:", e);
 ws.onclose = () => console.log("WS CLOSED ❌");
