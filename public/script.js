@@ -580,9 +580,10 @@ ws.onopen = () => {
 
 ws.onmessage = (event) => {
     let data;
+
     try {
         data = JSON.parse(event.data);
-    } catch {
+    } catch (e) {
         return;
     }
 
@@ -595,9 +596,9 @@ ws.onmessage = (event) => {
     div.innerHTML = `
         <span style="color:${color}; font-weight:bold;">
             ${sender}
-        </span>
-        <span style="color:#ffffff;">
-            : ${content}
+        </span>: 
+        <span style="color:${color};">
+            ${content}
         </span>
     `;
 

@@ -3,6 +3,7 @@ const WebSocket = require("ws");
 const express = require("express");
 const path = require("path");
 const crypto = require("crypto");
+const seenMessages = new Set();
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const PORT = process.env.PORT || 3001;
@@ -83,12 +84,16 @@ client.once("ready", () => {
 
 client.on("messageCreate", msg => {
 
-    // ignore system bots EXCEPT webhooks (tupperbox)
-    if (msg.author.bot && !msg.webhookId) return;
+    // 🔒 STOP duplicate processing of same Discord message
+    if (seenMessages.has(msg.id)) return;
+    seenMessages.add(msg.id);
 
-    let handle = "unknown";
-let displayName = "unknown";
-let color = "#ffffff";
+    setTimeout(() => seenMessages.delete(msg.id), 60000);
+let identity = {
+    handle: msg.author.username,
+    displayName: msg.author.username,
+    color: "#ffffff"
+};
 
 /* =====================================================
    1. REGISTERED RP USER (HIGHEST PRIORITY)
@@ -122,18 +127,20 @@ if (!handle) handle = msg.author.username;
 if (!displayName) displayName = handle;
 
     const payload = {
-        id: crypto.randomUUID(),
-        type: "message",
-        room: msg.channel.id,
-        handle,
-        displayName,
-        color,
-        content: msg.content,
-        timestamp: msg.createdTimestamp,
-        attachments: [...msg.attachments.values()].map(a => a.url)
-    };
+    id: msg.id, // optional but good for debugging
+    type: "message",
+    room: msg.channel.id,
 
-    broadcast(payload);
+    handle: identity.handle,
+    displayName: identity.displayName,
+    color: identity.color,
+
+    content: msg.content,
+    timestamp: msg.createdTimestamp,
+    attachments: [...msg.attachments.values()].map(a => a.url)
+};
+
+broadcast(payload);
 });
 
 /* =========================================================
