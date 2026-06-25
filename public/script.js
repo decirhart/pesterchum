@@ -226,7 +226,7 @@ document.getElementById("chatMax").onclick = () => {
 
 function addMsg(text, self = true) {
     const div = document.createElement("div");
-    div.textContent = text;
+    div.innerHTML = text; // IMPORTANT CHANGE
     div.style.textAlign = self ? "right" : "left";
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
@@ -591,10 +591,11 @@ ws.onmessage = (event) => {
 
     console.log("PARSED:", data);
 
-    const sender = data.from || data.user || "unknown";
+    const sender = data.displayName || data.handle || "unknown";
     const content = data.content || "";
 
-    addMsg(`${sender}: ${content}`, false);
+    const nameHTML = `<span style="color:${data.color || "#fff"}">${sender}</span>`;
+addMsg(`${nameHTML}: ${content}`, false);
 };
 
 ws.onerror = (e) => console.log("WS ERROR:", e);
