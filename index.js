@@ -148,21 +148,6 @@ process.on("unhandledRejection", err => {
     console.error("Unhandled rejection:", err);
 });
 
-// NEVER expose Discord username to frontend display
-const safePayload = {
-    id: crypto.randomUUID(),
-    type: "message",
-    room: msg.channel.id,
-
-    displayName,
-    handle, // internal only
-    color,
-
-    content: msg.content,
-    timestamp: msg.createdTimestamp,
-    attachments: [...msg.attachments.values()].map(a => a.url)
-};
-
 /* =========================================================
    LOGIN
 ========================================================= */
