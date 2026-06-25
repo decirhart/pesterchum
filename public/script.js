@@ -579,31 +579,30 @@ ws.onopen = () => {
 };
 
 ws.onmessage = (event) => {
-    console.log("RAW MESSAGE:", event.data);
-
     let data;
     try {
         data = JSON.parse(event.data);
-    } catch (e) {
-        console.log("BAD JSON:", event.data);
+    } catch {
         return;
     }
 
-    console.log("PARSED:", data);
+    const sender = data.displayName || "unknown";
+    const color = data.color || "#ffffff";
+    const content = data.content || "";
 
-  const sender = data.displayName || "unknown";
-const color = data.color || "#ffffff";
-const content = data.content || "";
+    const div = document.createElement("div");
 
-const div = document.createElement("div");
+    div.innerHTML = `
+        <span style="color:${color}; font-weight:bold;">
+            ${sender}
+        </span>
+        <span style="color:#ffffff;">
+            : ${content}
+        </span>
+    `;
 
-const nameSpan = `<span style="color:${color}; font-weight:bold;">${sender}</span>`;
-const msgSpan = `<span style="color:${color};">: ${content}</span>`;
-
-div.innerHTML = nameSpan + msgSpan;
-
-log.appendChild(div);
-log.scrollTop = log.scrollHeight;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
 };
 
 ws.onerror = (e) => console.log("WS ERROR:", e);
