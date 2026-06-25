@@ -79,7 +79,9 @@ client.once("ready", () => {
 });
 
 const COLOR_MAP = {
-    gawdelpusCacodoxy: "#3FB7B7"
+    gawdelpusCacodoxy: "#3FB7B7",
+    acquiescentConscript: "#7BADEE",
+    strawberryJam: "#B76E79"
 };
 
 function getColor(username) {
