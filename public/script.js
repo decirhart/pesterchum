@@ -72,9 +72,6 @@ bg.style.display = "block";
 requestAnimationFrame(() => {
     startBgStars();
 });
-setTimeout(() => {
-    initLoginSpiro();
-}, 0);
 
 document.getElementById("loginTitle").classList.add("rainbowGlow");
 
@@ -92,6 +89,9 @@ showTaskbar();
 
     bg.style.display = "block";
 
+    requestAnimationFrame(() => {
+        startBgStars();
+    });
 });
 
     loginLocked = false;
@@ -324,83 +324,92 @@ makeResizable(rightWindow);
 
 const loginCanvas = document.getElementById("loginSpiro");
 
-function initLoginSpiro() {
-    console.log("LOGIN SPIRO STARTED");
-    const canvas = document.getElementById("loginSpiro");
-    if (!canvas) return;
+if(loginCanvas){
 
-    canvas.width = 80;
-    canvas.height = 80;
+const ctx = loginCanvas.getContext("2d");
 
-    const ctx = canvas.getContext("2d");
+const cx = 40;
+const cy = 40;
 
-    const cx = 40;
-    const cy = 40;
+let angle = 0;
 
-    let angle = 0;
+function rgb(i,t){
 
-    function rgb(i, t) {
-        return `rgb(${(Math.sin(t + i) * 127 + 128) | 0},
-                    ${(Math.sin(t + i + 2) * 127 + 128) | 0},
-                    ${(Math.sin(t + i + 4) * 127 + 128) | 0})`;
-    }
+const r=Math.sin(t+i)*127+128;
+const g=Math.sin(t+i+2)*127+128;
+const b=Math.sin(t+i+4)*127+128;
 
-    function star(x, y, size, rot) {
-        ctx.beginPath();
+return `rgb(${r|0},${g|0},${b|0})`;
 
-        const spikes = 4;
-        const outer = size;
-        const inner = size * 0.45;
+}
 
-        for (let i = 0; i < spikes * 2; i++) {
-            const r = i % 2 === 0 ? outer : inner;
-            const a = rot + i * Math.PI / spikes;
+function star(x,y,size,rot){
 
-            const px = x + Math.cos(a) * r;
-            const py = y + Math.sin(a) * r;
+ctx.beginPath();
 
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-        }
+const spikes=4;
+const outer=size;
+const inner=size*.45;
 
-        ctx.closePath();
-        ctx.stroke();
-    }
+for(let i=0;i<spikes*2;i++){
 
-    function animate() {
-        ctx.fillStyle = "red";
-ctx.fillRect(0, 0, 80, 80);
-        ctx.clearRect(0, 0, 80, 80);
+const radius=(i%2===0)?outer:inner;
+const a=rot+i*Math.PI/spikes;
 
-        ctx.lineWidth = 1.6;
-        ctx.shadowBlur = 10;
+const px=x+Math.cos(a)*radius;
+const py=y+Math.sin(a)*radius;
 
-        angle += 0.008;
+if(i===0)
+ctx.moveTo(px,py);
+else
+ctx.lineTo(px,py);
 
-        const orbit = 18;
+}
 
-        for (let i = 0; i < 3; i++) {
-            const phase = angle + i * (Math.PI * 2 / 3);
+ctx.closePath();
+ctx.stroke();
 
-            const x = cx + Math.cos(phase) * orbit;
-            const y = cy + Math.sin(phase) * orbit;
+}
 
-            ctx.strokeStyle = rgb(i, angle * 1.5);
-            ctx.shadowColor = ctx.strokeStyle;
+function animate(){
 
-            star(x, y, 11, angle * 1.2);
-        }
+ctx.clearRect(0,0,80,80);
 
-        ctx.shadowBlur = 12;
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-        ctx.fill();
+ctx.lineWidth=1.6;
+ctx.shadowBlur=10;
 
-        requestAnimationFrame(animate);
-    }
+angle+=0.008;
 
-    animate();
+const orbit=18;
+
+for(let i=0;i<3;i++){
+
+const phase=angle+i*(Math.PI*2/3);
+
+const x=cx+Math.cos(phase)*orbit;
+const y=cy+Math.sin(phase)*orbit;
+
+ctx.strokeStyle=rgb(i,angle*1.5);
+ctx.shadowColor=ctx.strokeStyle;
+
+star(x,y,11,angle*1.2);
+
+}
+
+ctx.shadowBlur=12;
+
+ctx.fillStyle="#fff";
+
+ctx.beginPath();
+ctx.arc(cx,cy,3,0,Math.PI*2);
+ctx.fill();
+
+requestAnimationFrame(animate);
+
+}
+
+animate();
+
 }
 
 const bg = document.getElementById("bgStars");
@@ -560,9 +569,9 @@ if (taskCanvas) {
 }
 
 const ws = new WebSocket(
-    window.location.protocol === "https:"
-        ? "wss://pesterchum.onrender.com"
-        : "ws://pesterchum.onrender.com"
+  window.location.protocol === "https:"
+    ? "wss://" + window.location.host
+    : "ws://localhost:3001"
 );
 
 ws.onopen = () => {
@@ -570,16 +579,19 @@ ws.onopen = () => {
 };
 
 ws.onmessage = (event) => {
-    let data;
+    console.log("RAW MESSAGE:", event.data);
 
+    let data;
     try {
         data = JSON.parse(event.data);
     } catch (e) {
-        console.log("BAD WS DATA:", event.data);
+        console.log("BAD JSON:", event.data);
         return;
     }
 
-    const sender = data.displayName || data.from || "unknown";
+    console.log("PARSED:", data);
+
+    const sender = data.from || data.user || "unknown";
     const content = data.content || "";
 
     addMsg(`${sender}: ${content}`, false);
