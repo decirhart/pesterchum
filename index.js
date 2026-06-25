@@ -108,7 +108,7 @@ client.on("messageCreate", msg => {
 
         handle: identity.handle,
         displayName: identity.displayName,
-        color: identity.color,
+        color: getColor(msg.author.username),
 
         content: msg.content,
         timestamp: msg.createdTimestamp,

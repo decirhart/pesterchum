@@ -35,6 +35,14 @@ const users = {
     gaminesqueCacogen: "Crowberry"
 };
 
+const COLOR_MAP = {
+    gawdelpusCacodoxy: "#3FB7B7"
+};
+
+function getColor(username) {
+    return COLOR_MAP[username] || "#ffffff";
+}
+
 let loginLocked = false;
 
 function sleep(ms) {
