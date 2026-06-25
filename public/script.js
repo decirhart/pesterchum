@@ -568,26 +568,22 @@ if (taskCanvas) {
     animate();
 }
 
-const ws = new WebSocket(
-  window.location.protocol === "https:"
-    ? "wss://" + window.location.host
-    : "ws://localhost:3001"
-);
+const ws = new WebSocket("wss://pesterchum.onrender.com");
 
 ws.onopen = () => {
     console.log("WS CONNECTED ✅");
 };
 
 ws.onmessage = (event) => {
-    console.log("RAW MESSAGE:", event.data);
+    const data = JSON.parse(event.data);
 
-    let data;
-    try {
-        data = JSON.parse(event.data);
-    } catch (e) {
-        console.log("BAD JSON:", event.data);
-        return;
-    }
+    console.log("WS DATA:", data);
+
+    const sender = data.displayName || data.from || "unknown";
+    const content = data.content || "";
+
+    addMsg(`${sender}: ${content}`, false);
+};
 
     console.log("PARSED:", data);
 
