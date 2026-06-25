@@ -592,6 +592,8 @@ ws.onmessage = (event) => {
     console.log("PARSED:", data);
 
     const sender = data.handle || data.displayName || "unknown";
+    const content = data.content || "";
+
     const nameHTML = `<span style="color:${data.color || "#fff"}">${sender}</span>`;
 addMsg(`${nameHTML}: ${content}`, false);
 };
