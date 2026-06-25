@@ -100,27 +100,18 @@ client.on("messageCreate", msg => {
     // Ignore users not linked in users.json
     if (!rpUser) return;
 
-    const payload = {
+   const payload = {
+    id: crypto.randomUUID(),
+    type: "message",
+    room: msg.channel.id,
 
-        id: crypto.randomUUID(),
+    handle: rpUser.display.handle,
+    color: rpUser.display.color,
 
-        type: "message",
-
-        room: msg.channel.id,
-
-        handle: rpUser.display.handle,
-
-        displayName: rpUser.display.nickname,
-
-        color: rpUser.display.color,
-
-        content: msg.content,
-
-        timestamp: msg.createdTimestamp,
-
-        attachments: [...msg.attachments.values()].map(a => a.url)
-
-    };
+    content: msg.content,
+    timestamp: msg.createdTimestamp,
+    attachments: [...msg.attachments.values()].map(a => a.url)
+};
 
     broadcast(payload);
 
