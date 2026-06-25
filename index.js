@@ -84,68 +84,38 @@ client.once("ready", () => {
 
 client.on("messageCreate", msg => {
 
-    if (!msg.webhookId) return; // 🔥 ONLY TUPPER / WEBHOOKS
+    // ONLY TUPPER / WEBHOOK MESSAGES
+    if (!msg.webhookId) return;
 
-    if (seenMessages.has(msg.id)) return;
-    seenMessages.add(msg.id);
+    // dedupe
+    const key = msg.id;
+    if (seenMessages.has(key)) return;
+    seenMessages.add(key);
 
-    setTimeout(() => seenMessages.delete(msg.id), 60000);
+    setTimeout(() => seenMessages.delete(key), 60000);
 
-    const rpUser = Object.values(USERS).find(
-    u => u?.discord?.id === msg.author.id
-);
-
-let identity;
-
-if (rpUser) {
-    identity = {
-        handle: rpUser.display.handle,
-        displayName: rpUser.display.nickname,
-        color: rpUser.display.color
-    };
-} else if (msg.webhookId) {
-    identity = {
+    // identity (webhook = OC name)
+    const identity = {
         handle: msg.author.username,
         displayName: msg.author.username,
         color: "#ffffff"
     };
-} else {
-    identity = {
-        handle: msg.author.username,
-        displayName: msg.author.username,
-        color: "#ffffff"
+
+    const payload = {
+        id: msg.id,
+        type: "message",
+        room: msg.channel.id,
+
+        handle: identity.handle,
+        displayName: identity.displayName,
+        color: identity.color,
+
+        content: msg.content,
+        timestamp: msg.createdTimestamp,
+        attachments: [...msg.attachments.values()].map(a => a.url)
     };
-}
 
-/* =====================================================
-   2. TUPPER / WEBHOOK OVERRIDE (ONLY IF NO RP USER)
-===================================================== */
-
-if (!rpUser && msg.webhookId) {
-
-    handle = msg.author.username;        // OC name
-    displayName = msg.author.username;   // OC name
-}
-
-/* =====================================================
-   3. FINAL FALLBACK
-===================================================== */
-
-const payload = {
-    id: msg.id,
-    type: "message",
-    room: msg.channel.id,
-
-    handle: identity.handle,
-    displayName: identity.displayName,
-    color: identity.color,
-
-    content: msg.content,
-    timestamp: msg.createdTimestamp,
-    attachments: [...msg.attachments.values()].map(a => a.url)
-};
-
-broadcast(payload);
+    broadcast(payload);
 });
 
 /* =========================================================

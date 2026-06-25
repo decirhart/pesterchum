@@ -615,5 +615,6 @@ ws.onmessage = (event) => {
     log.scrollTop = log.scrollHeight;
 };log.scrollHeight;
 
+
 ws.onerror = (e) => console.log("WS ERROR:", e);
 ws.onclose = () => console.log("WS CLOSED ❌");
