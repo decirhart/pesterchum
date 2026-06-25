@@ -72,6 +72,9 @@ bg.style.display = "block";
 requestAnimationFrame(() => {
     startBgStars();
 });
+requestAnimationFrame(() => {
+    initLoginSpiro();
+});
 
 document.getElementById("loginTitle").classList.add("rainbowGlow");
 
@@ -324,92 +327,77 @@ makeResizable(rightWindow);
 
 const loginCanvas = document.getElementById("loginSpiro");
 
-if(loginCanvas){
+function initLoginSpiro() {
+    const canvas = document.getElementById("loginSpiro");
+    if (!canvas) return;
 
-const ctx = loginCanvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
 
-const cx = 40;
-const cy = 40;
+    const cx = 40;
+    const cy = 40;
 
-let angle = 0;
+    let angle = 0;
 
-function rgb(i,t){
+    function rgb(i, t) {
+        return `rgb(${(Math.sin(t + i) * 127 + 128) | 0},
+                    ${(Math.sin(t + i + 2) * 127 + 128) | 0},
+                    ${(Math.sin(t + i + 4) * 127 + 128) | 0})`;
+    }
 
-const r=Math.sin(t+i)*127+128;
-const g=Math.sin(t+i+2)*127+128;
-const b=Math.sin(t+i+4)*127+128;
+    function star(x, y, size, rot) {
+        ctx.beginPath();
 
-return `rgb(${r|0},${g|0},${b|0})`;
+        const spikes = 4;
+        const outer = size;
+        const inner = size * 0.45;
 
-}
+        for (let i = 0; i < spikes * 2; i++) {
+            const r = i % 2 === 0 ? outer : inner;
+            const a = rot + i * Math.PI / spikes;
 
-function star(x,y,size,rot){
+            const px = x + Math.cos(a) * r;
+            const py = y + Math.sin(a) * r;
 
-ctx.beginPath();
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
 
-const spikes=4;
-const outer=size;
-const inner=size*.45;
+        ctx.closePath();
+        ctx.stroke();
+    }
 
-for(let i=0;i<spikes*2;i++){
+    function animate() {
+        ctx.clearRect(0, 0, 80, 80);
 
-const radius=(i%2===0)?outer:inner;
-const a=rot+i*Math.PI/spikes;
+        ctx.lineWidth = 1.6;
+        ctx.shadowBlur = 10;
 
-const px=x+Math.cos(a)*radius;
-const py=y+Math.sin(a)*radius;
+        angle += 0.008;
 
-if(i===0)
-ctx.moveTo(px,py);
-else
-ctx.lineTo(px,py);
+        const orbit = 18;
 
-}
+        for (let i = 0; i < 3; i++) {
+            const phase = angle + i * (Math.PI * 2 / 3);
 
-ctx.closePath();
-ctx.stroke();
+            const x = cx + Math.cos(phase) * orbit;
+            const y = cy + Math.sin(phase) * orbit;
 
-}
+            ctx.strokeStyle = rgb(i, angle * 1.5);
+            ctx.shadowColor = ctx.strokeStyle;
 
-function animate(){
+            star(x, y, 11, angle * 1.2);
+        }
 
-ctx.clearRect(0,0,80,80);
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+        ctx.fill();
 
-ctx.lineWidth=1.6;
-ctx.shadowBlur=10;
+        requestAnimationFrame(animate);
+    }
 
-angle+=0.008;
-
-const orbit=18;
-
-for(let i=0;i<3;i++){
-
-const phase=angle+i*(Math.PI*2/3);
-
-const x=cx+Math.cos(phase)*orbit;
-const y=cy+Math.sin(phase)*orbit;
-
-ctx.strokeStyle=rgb(i,angle*1.5);
-ctx.shadowColor=ctx.strokeStyle;
-
-star(x,y,11,angle*1.2);
-
-}
-
-ctx.shadowBlur=12;
-
-ctx.fillStyle="#fff";
-
-ctx.beginPath();
-ctx.arc(cx,cy,3,0,Math.PI*2);
-ctx.fill();
-
-requestAnimationFrame(animate);
-
-}
-
-animate();
-
+    animate();
 }
 
 const bg = document.getElementById("bgStars");
@@ -568,29 +556,31 @@ if (taskCanvas) {
     animate();
 }
 
-const ws = new WebSocket("wss://pesterchum.onrender.com");
+const ws = new WebSocket(
+    window.location.protocol === "https:"
+        ? "wss://pesterchum.onrender.com"
+        : "ws://pesterchum.onrender.com"
+);
 
 ws.onopen = () => {
     console.log("WS CONNECTED ✅");
 };
 
 ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+    let data;
 
-    console.log("WS DATA:", data);
+    try {
+        data = JSON.parse(event.data);
+    } catch (e) {
+        console.log("BAD WS DATA:", event.data);
+        return;
+    }
 
     const sender = data.displayName || data.from || "unknown";
     const content = data.content || "";
 
     addMsg(`${sender}: ${content}`, false);
 };
-
-    console.log("PARSED:", data);
-
-    const sender = data.from || data.user || "unknown";
-    const content = data.content || "";
-
-    addMsg(`${sender}: ${content}`, false);
 
 ws.onerror = (e) => console.log("WS ERROR:", e);
 ws.onclose = () => console.log("WS CLOSED ❌");
