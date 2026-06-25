@@ -82,7 +82,7 @@ const COLOR_MAP = {
     gawdelpusCacodoxy: "#3FB7B7",
     acquiescentConscript: "#7BADEE",
     strawberryJam: "#B76E79",
-    starShredder: "#487694",
+    skippingStarshredder: "#487694",
 };
 
 function getColor(username) {
