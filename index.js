@@ -93,7 +93,10 @@ function getColor(username) {
 client.on("messageCreate", msg => {
 
     // ONLY TUPPER / WEBHOOK MESSAGES
-    if (!msg.webhookId) return;
+  const isWebhook = !!msg.webhookId;
+const isTupper = msg.author.username?.toLowerCase().includes("tupper") || isWebhook;
+
+if (!isTupper) return;
 
     // dedupe
     const key = msg.id;
