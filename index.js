@@ -78,6 +78,14 @@ client.once("ready", () => {
 
 });
 
+const COLOR_MAP = {
+    gawdelpusCacodoxy: "#3FB7B7"
+};
+
+function getColor(username) {
+    return COLOR_MAP[username] || "#ffffff";
+}
+
 /* =========================================================
    DISCORD -> STANDARD MESSAGE PIPELINE
 ========================================================= */
