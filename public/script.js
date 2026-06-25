@@ -591,7 +591,6 @@ ws.onmessage = (event) => {
     const content = data.content || "";
 
     addMsg(`${sender}: ${content}`, false);
-};
 
 ws.onerror = (e) => console.log("WS ERROR:", e);
 ws.onclose = () => console.log("WS CLOSED ❌");
