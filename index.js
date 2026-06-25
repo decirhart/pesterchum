@@ -86,47 +86,40 @@ client.on("messageCreate", msg => {
     // ignore system bots EXCEPT webhooks (tupperbox)
     if (msg.author.bot && !msg.webhookId) return;
 
-    let handle = null;
-    let displayName = null;
-    let color = "#ffffff";
+    let handle = "unknown";
+let displayName = "unknown";
+let color = "#ffffff";
 
-    /* =====================================================
-       1. MATCH REGISTERED USERS (discord ID mapping)
-    ===================================================== */
+/* =====================================================
+   1. REGISTERED RP USER (HIGHEST PRIORITY)
+===================================================== */
 
-    let rpUser = null;
+const rpUser = Object.values(USERS).find(
+    u => u?.discord?.id === msg.author.id
+);
 
-    for (const key in USERS) {
-        if (USERS[key]?.discord?.id === msg.author.id) {
-            rpUser = USERS[key];
-            break;
-        }
-    }
+if (rpUser) {
+    handle = rpUser.display.handle;
+    displayName = rpUser.display.nickname;
+    color = rpUser.display.color;
+}
 
-    if (rpUser) {
-        handle = rpUser.display.handle;
-        displayName = rpUser.display.nickname;
-        color = rpUser.display.color;
-    }
+/* =====================================================
+   2. TUPPER / WEBHOOK OVERRIDE (ONLY IF NO RP USER)
+===================================================== */
 
-    /* =====================================================
-       2. WEBHOOK / TUPPERBOX SUPPORT
-    ===================================================== */
+if (!rpUser && msg.webhookId) {
 
-    if (msg.webhookId || !handle) {
+    handle = msg.author.username;        // OC name
+    displayName = msg.author.username;   // OC name
+}
 
-        // Tupperbox usually sets:
-        // msg.author.username = OC name
-        handle = msg.author.username;
-        displayName = msg.author.username;
-    }
+/* =====================================================
+   3. FINAL FALLBACK
+===================================================== */
 
-    /* =====================================================
-       3. FALLBACK SAFETY
-    ===================================================== */
-
-    if (!handle) handle = "unknown";
-    if (!displayName) displayName = handle;
+if (!handle) handle = msg.author.username;
+if (!displayName) displayName = handle;
 
     const payload = {
         id: crypto.randomUUID(),
