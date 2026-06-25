@@ -72,9 +72,9 @@ bg.style.display = "block";
 requestAnimationFrame(() => {
     startBgStars();
 });
-requestAnimationFrame(() => {
+setTimeout(() => {
     initLoginSpiro();
-});
+}, 0);
 
 document.getElementById("loginTitle").classList.add("rainbowGlow");
 
@@ -92,9 +92,6 @@ showTaskbar();
 
     bg.style.display = "block";
 
-    requestAnimationFrame(() => {
-        startBgStars();
-    });
 });
 
     loginLocked = false;
@@ -328,8 +325,12 @@ makeResizable(rightWindow);
 const loginCanvas = document.getElementById("loginSpiro");
 
 function initLoginSpiro() {
+    console.log("LOGIN SPIRO STARTED");
     const canvas = document.getElementById("loginSpiro");
     if (!canvas) return;
+
+    canvas.width = 80;
+    canvas.height = 80;
 
     const ctx = canvas.getContext("2d");
 
