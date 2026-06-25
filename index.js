@@ -83,6 +83,7 @@ const COLOR_MAP = {
     acquiescentConscript: "#7BADEE",
     strawberryJam: "#B76E79",
     skippingStarshredder: "#487694",
+    chimeraDaze: "#56dce1"
 };
 
 function getColor(username) {
