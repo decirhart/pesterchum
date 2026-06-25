@@ -368,6 +368,8 @@ function initLoginSpiro() {
     }
 
     function animate() {
+        ctx.fillStyle = "red";
+ctx.fillRect(0, 0, 80, 80);
         ctx.clearRect(0, 0, 80, 80);
 
         ctx.lineWidth = 1.6;
