@@ -591,11 +591,19 @@ ws.onmessage = (event) => {
 
     console.log("PARSED:", data);
 
-    const sender = data.handle || data.displayName || "unknown";
-    const content = data.content || "";
+  const sender = data.displayName || "unknown";
+const color = data.color || "#ffffff";
+const content = data.content || "";
 
-    const nameHTML = `<span style="color:${data.color || "#fff"}">${sender}</span>`;
-addMsg(`${nameHTML}: ${content}`, false);
+const div = document.createElement("div");
+
+const nameSpan = `<span style="color:${color}; font-weight:bold;">${sender}</span>`;
+const msgSpan = `<span style="color:${color};">: ${content}</span>`;
+
+div.innerHTML = nameSpan + msgSpan;
+
+log.appendChild(div);
+log.scrollTop = log.scrollHeight;
 };
 
 ws.onerror = (e) => console.log("WS ERROR:", e);
