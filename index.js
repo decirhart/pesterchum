@@ -83,48 +83,64 @@ client.once("ready", () => {
 
 client.on("messageCreate", msg => {
 
-    // Tupperbox / webhook support (BEST CASE)
-if (msg.webhookId || msg.author.bot) {
-
-    handle = msg.author.username; // Tupperbox sets OC name here
-    displayName = msg.author.username;
-
-}
-
-// fallback: [OC] message
-if (!handle) {
-    const match = msg.content.match(/^\[(.+?)\]\s*(.*)$/);
-
-    if (match) {
-        handle = match[1];
-        msg.content = match[2];
-    }
-}
-
-    // Ignore bots (including Tupperbox webhooks if desired)
-    if (msg.author.bot) return;
+    // ignore system bots EXCEPT webhooks (tupperbox)
+    if (msg.author.bot && !msg.webhookId) return;
 
     let handle = null;
-let displayName = null;
-let color = "#ffffff";
+    let displayName = null;
+    let color = "#ffffff";
 
-   const payload = {
-    id: crypto.randomUUID(),
-    type: "message",
-    room: msg.channel.id,
+    /* =====================================================
+       1. MATCH REGISTERED USERS (discord ID mapping)
+    ===================================================== */
 
-    handle: handle,
-    displayName: displayName,
+    let rpUser = null;
 
-    color: "#ffffff", // optional for now
+    for (const key in USERS) {
+        if (USERS[key]?.discord?.id === msg.author.id) {
+            rpUser = USERS[key];
+            break;
+        }
+    }
 
-    content: msg.content,
-    timestamp: msg.createdTimestamp,
-    attachments: [...msg.attachments.values()].map(a => a.url)
-};
+    if (rpUser) {
+        handle = rpUser.display.handle;
+        displayName = rpUser.display.nickname;
+        color = rpUser.display.color;
+    }
+
+    /* =====================================================
+       2. WEBHOOK / TUPPERBOX SUPPORT
+    ===================================================== */
+
+    if (msg.webhookId || !handle) {
+
+        // Tupperbox usually sets:
+        // msg.author.username = OC name
+        handle = msg.author.username;
+        displayName = msg.author.username;
+    }
+
+    /* =====================================================
+       3. FALLBACK SAFETY
+    ===================================================== */
+
+    if (!handle) handle = "unknown";
+    if (!displayName) displayName = handle;
+
+    const payload = {
+        id: crypto.randomUUID(),
+        type: "message",
+        room: msg.channel.id,
+        handle,
+        displayName,
+        color,
+        content: msg.content,
+        timestamp: msg.createdTimestamp,
+        attachments: [...msg.attachments.values()].map(a => a.url)
+    };
 
     broadcast(payload);
-
 });
 
 /* =========================================================
